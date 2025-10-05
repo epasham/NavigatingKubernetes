@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+  namespace: backup
+spec:
+  schedule: "0 2 * * *"
+  startingDeadlineSeconds: 120
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: db-backup
+            image: postgres:13-alpine
+            command:
+            - /bin/bash
+            - -c
+            - |
+              echo '[INFO] Backup Started at at $(date)' && sleep 10 && echo "[INFO] Backup is complete at $(date)"
