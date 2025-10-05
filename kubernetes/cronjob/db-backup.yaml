@@ -20,4 +20,4 @@ spec:
             - /bin/bash
             - -c
             - |
-              echo '[INFO] Backup Started at at $(date)' && sleep 10 && echo "[INFO] Backup is complete at $(date)"
+              echo "[INFO] Backup Started at $(date)" && sleep 10 && echo "[INFO] Backup is complete at $(date)"
