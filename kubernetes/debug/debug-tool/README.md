@@ -1,6 +1,6 @@
 # build debug docker image
-docker build -t ekambaram/debug-tool .
+docker build -t ekambaram/debug-tool:1125 .
 
-docker push ekambaram/debug-tool
+docker push ekambaram/debug-tool:1125
 
-docker pull docker.io/ekambaram/debug-tool:latest
+docker pull docker.io/ekambaram/debug-tool:1125
