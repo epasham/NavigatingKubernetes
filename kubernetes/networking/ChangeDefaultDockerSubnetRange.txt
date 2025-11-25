@@ -1,0 +1,40 @@
+# How To Change The Default Docker Subnet IP Range
+
+By default, Docker uses 172.17.0.0/16. 
+This can conflict with your cloud subnet IP range. Here's how to update it.
+
+# Step 1
+SSH into the Compute Instance/VM.
+
+# verify the subnet IP range assigned to docker network
+ip a show docker0
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1454 qdisc noqueue state DOWN group default 
+    link/ether 56:d5:89:96:97:71 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+
+# Step 2
+You need to edit /etc/docker/daemon.json
+
+vi /etc/docker/daemon.json
+Add "bip": "172.26.0.1/16" to the JSON, in daemon.json.
+
+The JSON will look like this after you have updated it:
+{
+"log-driver": "jjson-file",
+"storage-driver": "overlay2",
+"registry-mirrors": ["https://mirror.gcr.io"],
+"bip": "172.26.0.1/16"
+}
+
+# Step 3
+Restart Docker:
+systemctl restart docker
+
+# Step 4
+Verify that docker network address range is updated to 172.26.0.1/16
+ip a show docker0
+3: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1454 qdisc noqueue state DOWN group default 
+    link/ether 56:d5:89:96:97:71 brd ff:ff:ff:ff:ff:ff
+    inet 172.26.0.1/16 brd 172.26.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
