@@ -1,0 +1,71 @@
+# Kubernetes RBAC limitation
+
+# Kubernetes RBAC cannot express 'all namespaces except kube-system, default, kube-public etc.' in a single ClusterRoleBinding.
+
+A ClusterRole is cluster-scoped and doesnt have namespace filtering.
+A ClusterRoleBinding also cannot exclude namespaces. It grants the ClusterRole across the whole cluster.
+To exclude a namespace (like kube-system and other system namespaces), you must bind the ClusterRole only to the namespaces you want via RoleBinding per namespace.
+
+#1: Define a ClusterRole (list deployments,services and pods and can also delete pods)
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: developer-access
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+---
+Note:
+This is reusable across namespaces. It does not itself grant permissions; binding does.
+
+
+#2: Bind the ClusterRole to all target namespaces except kube-system and other system namespaces
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-access
+  namespace: <allowed-namespace>           # create one per namespace
+subjects:
+- kind: Group
+  name: <aad-group-object-id>              # Azure AD group OBJECT ID (GUID)
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole                        # reference the ClusterRole above
+  name: developer-access
+---
+
+#3: Automation: generate RoleBindings for all namespaces except kube-system and other system namespaces
+
+AAD_GROUP_ID="123-456"        # <aad-group-object-id>
+CLUSTER_ROLE_NAME="developer-access"
+
+# List namespaces except kube-system (add others to exclude if needed)
+---
+for ns in $(kubectl get ns -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | grep -vE '^(kube-system|kube-public|kube-node-lease|default|local-path-storage)$'); do
+  echo "[INFO] Creating rolebinding for $ns"
+  cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer-access
+  namespace: ${ns}
+subjects:
+- kind: Group
+  name: ${AAD_GROUP_ID}
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: ${CLUSTER_ROLE_NAME}
+  apiGroup: rbac.authorization.k8s.io
+EOF
+done
+---
