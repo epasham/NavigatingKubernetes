@@ -136,12 +136,10 @@ showmount -e
 ssh root@node01 apt install nfs-common -y
 
 # mount nfs share on worker node
-{
 NFSIP=$(ip addr show enp1s0 | awk '$1 == "inet" { print $2 }' | cut -d/ -f1)
 echo $NFSIP
 ssh root@node01 mount -t nfs $NFSIP:/mnt/nfs/data /mnt
 ssh root@node01 ls /mnt
-}
 
 
 # The jenkins-admin cluster role has all the permissions to manage the cluster components
