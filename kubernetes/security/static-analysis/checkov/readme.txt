@@ -20,8 +20,16 @@ pip install checkov
 # Optional: Create a symlink for easy access
 ln -s $HOME/venv/checkov/bin/checkov /usr/local/bin/checkov
 
+# Alternative install
+apt install pipenv -y
+pipenv run pip install checkov
+pipenv run checkov -v
+pipenv run checkov -f deployment.yaml
+##
+
+
 # to scan an individual file
-checkov -f ./deployment.
+checkov -f ./deployment.yaml
 
 # to scan a directory
 checkov --directory /path/to/iac/code
@@ -44,3 +52,28 @@ terraform init
 terraform plan -out tf.plan
 terraform show -json tf.plan  > tf.json
 checkov -f tf.json
+
+
+# Checkov can be deployed in Kubernetes as a Job to get immediate feedback on the state of resources in your cluster.
+# https://github.com/bridgecrewio/checkov/tree/main/kubernetes
+
+
+kubectl apply -f https://raw.githubusercontent.com/bridgecrewio/checkov/main/kubernetes/checkov-job.yaml
+namespace/checkov created
+serviceaccount/checkov created
+clusterrole.rbac.authorization.k8s.io/checkov-view created
+clusterrolebinding.rbac.authorization.k8s.io/checkov created
+job.batch/checkov created
+
+# to check job status
+kubectl get jobs -n checkov
+
+# to get a full log output of the cluster scan
+kubectl logs job/checkov -n checkov
+
+# To remove the job and logs, you can run:
+kubectl delete clusterrolebinding checkov
+kubectl delete clusterrole checkov-view
+kubectl delete namespace checkov
+OR
+kubectl delete -f https://raw.githubusercontent.com/bridgecrewio/checkov/main/kubernetes/checkov-job.yaml
