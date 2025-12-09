@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory containing tar files
-IMAGE_DIR="$HOME/ica-app/docker-images"
+IMAGE_DIR="$HOME/sample-app/docker-images"
 
 # Loop through all tar files
 for tarfile in "$IMAGE_DIR"/*.tar; do
