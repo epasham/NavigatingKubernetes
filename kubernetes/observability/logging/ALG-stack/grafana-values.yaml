@@ -1,0 +1,39 @@
+---
+persistence:
+  type: pvc
+  enabled: true
+  size: 2Gi 
+  storageClassName: local-path
+
+# DO NOT DO THIS IN PRODUCTION USECASES
+adminUser: admin
+adminPassword: welcome@123
+# CONSIDER USING AN EXISTING SECRET
+# Use an existing secret for the admin user.
+# admin:
+   # Name of the existing Kubernetes secret
+#  existingSecret: "grafana-admin-credentials"
+   # Key within the secret containing the admin username
+#  userKey: admin-user
+   # Key within the secret containing the admin password
+#  passwordKey: admin-password
+
+service:
+  enabled: true
+  type: ClusterIP
+
+datasources:
+  datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: proxy
+          orgId: 1
+          #url: http://loki-gateway.<namespace>.svc.cluster.local:80
+          url: http://{{ .Release.Name }}-loki-gateway
+          basicAuth: false
+          isDefault: false
+          version: 1
+          editable: false
+		  
