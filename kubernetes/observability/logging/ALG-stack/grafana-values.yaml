@@ -30,8 +30,7 @@ datasources:
           type: loki
           access: proxy
           orgId: 1
-          #url: http://loki-gateway.<namespace>.svc.cluster.local:80
-          url: http://{{ .Release.Name }}-loki-gateway
+          url: http://loki-gateway.observability.svc.cluster.local:80
           basicAuth: false
           isDefault: false
           version: 1
