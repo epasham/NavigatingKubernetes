@@ -8,3 +8,7 @@ if ! helm repo list | grep -q "grafana.github.io"; then
 else
     echo "[INFO] grafana helm repository is already present"
 fi
+
+# Install grafana
+helm template grafana grafana/grafana --namespace observability -f grafana-values.yml
+helm upgrade --install grafana grafana/grafana -n observability --create-namespace -f grafana-values.yml
