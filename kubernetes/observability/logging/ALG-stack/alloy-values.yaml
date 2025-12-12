@@ -26,6 +26,7 @@ podLogs:
     pod: pod  # Set structured metadata "pod" from label "pod"
   namespaces:
     - observability
+    - kube-system
 
 # Collectors
 alloy-singleton:
