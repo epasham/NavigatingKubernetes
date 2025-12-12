@@ -22,7 +22,7 @@ helm upgrade --Install grafana grafana/grafana -n observability --create-namespa
 
 
 print_header "Install Grafana Alloy"
-helm upgrade --install alloy grafana/k8s-monitoring -n observability --create-namespace -f k8s-monitoring-values.yml  --wait
+helm upgrade --install alloy grafana/k8s-monitoring -n observability --create-namespace -f alloy-values.yaml --wait
 
 
 print_header "admin password: $(kubectl get secret --namespace grafana grafana-dashboard -o jsonpath="{.data.admin-password}" | base64 --decode)"
