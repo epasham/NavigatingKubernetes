@@ -402,7 +402,8 @@ config:
         name loki
         match *
         labels job=fluentbit, pod=$kubernetes['pod_name'], namespace=$kubernetes['namespace_name'], container=$kubernetes['container_name']
-        host lgtm-distributed-loki-distributor
+        host loki
+        port 3100
 
 
   ## https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/upstream-servers
