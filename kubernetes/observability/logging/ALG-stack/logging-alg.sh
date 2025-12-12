@@ -25,5 +25,5 @@ print_header "Install Grafana Alloy"
 helm upgrade --install alloy grafana/k8s-monitoring -n observability --create-namespace -f alloy-values.yaml --wait
 
 
-print_header "admin password: $(kubectl get secret --namespace grafana grafana-dashboard -o jsonpath="{.data.admin-password}" | base64 --decode)"
-print_header "kubectl -n observability port-forward --address 0.0.0.0 svc/grafana 8080:80 &"
+print_header "admin password: $(kubectl -n observability get secret grafana -o jsonpath="{.data.admin-password}" | base64 --decode)"
+print_header "run this command to access grafana dashboard: kubectl -n observability port-forward --address 0.0.0.0 svc/grafana 8080:80 &"
