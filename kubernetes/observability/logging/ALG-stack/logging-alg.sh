@@ -18,7 +18,7 @@ helm upgrade --install  loki grafana/loki -n observability --create-namespace -f
 
 
 print_header "installing Grafana dashboard"
-helm upgrade --Install grafana grafana/grafana -n observability --create-namespace -f grafana-values.yaml --wait
+helm upgrade --install grafana grafana/grafana -n observability --create-namespace -f grafana-values.yaml --wait
 
 
 print_header "Install Grafana Alloy"
