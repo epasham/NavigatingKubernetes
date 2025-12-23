@@ -1,0 +1,89 @@
+##############
+# api-group
+##############
+#####
+# LAB-1: identify api-group
+#####
+# Write the Api Group of ingress to /opt/api-group file.
+k api-resources | grep -iw ingress
+ingresses        ing          networking.k8s.io/v1              true         Ingress
+
+k api-resources | grep -iw ingress | awk '{print $3}' | cut -d'/' -f1 > /opt/api-group
+# cat /opt/api-group
+networking.k8s.i
+
+# explain api can also be used
+controlplane:~$ k explain ingress
+GROUP:      networking.k8s.io
+KIND:       Ingress
+VERSION:    v1
+
+#!/bin/bash
+if [[ $(cat /opt/api-group) = 'networking.k8s.io' ]]
+then
+    exit 0
+else
+    exit 1
+fi
+
+#####
+# LAB-2: update api-group
+#####
+The RuntimeClass resource file at /opt/myclass.yaml uses a deprecated Api version.
+Update the file to use the non deprecated one and create the myclass object.
+
+cat <<EOF | sudo tee /opt/myclass.yaml
+apiVersion: node.k8s.io/v1beta2
+kind: RuntimeClass
+metadata:
+  name: myclass 
+handler: myconfiguration 
+EOF
+
+vi /opt/myclass.yaml
+Update apiVersion: node.k8s.io/v1beta2  --> apiVersion: node.k8s.io/v1
+k apply -f /opt/myclass.yaml
+###
+There is a CronJob file at /apps/cronjob.yaml which uses a deprecated Api version.
+Update the file to use the non deprecated one
+cat <<EOF | sudo tee /apps/cronjob.yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backup
+spec:
+  schedule: "5 4 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: bash
+            command:
+            - /bin/sh
+            - -c
+            - date
+          restartPolicy: OnFailure
+EOF
+
+#####
+# LAB-3: Identify kubernetes version
+#####
+The K8s version is written as Major.Minor.Patch
+
+Create file /opt/versions with three lines. 
+Each line containing only one number from the installed K8s server version
+Major
+Minor
+Patch
+
+controlplane:~$ k get no
+NAME           STATUS   ROLES           AGE   VERSION
+controlplane   Ready    control-plane   12d   v1.33.2
+
+cat <<EOF | sudo tee /opt/versions
+1
+33
+2 
+EOF
