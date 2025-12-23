@@ -1,0 +1,108 @@
+##############
+# RBAC
+##############
+
+# Notes
+A ClusterRole|Role defines a set of permissions and where it is available, in the whole cluster or just a single Namespace.
+
+A ClusterRoleBinding|RoleBinding connects a set of permissions with an account and defines where it is applied, in the whole cluster or just a single Namespace.
+
+Because of this there are 4 different RBAC combinations and 3 valid ones:
+
+Role + RoleBinding (available in single Namespace, applied in single Namespace)
+ClusterRole + ClusterRoleBinding (available cluster-wide, applied cluster-wide)
+ClusterRole + RoleBinding (available cluster-wide, applied in single Namespace)
+Role + ClusterRoleBinding (NOT POSSIBLE: available in single Namespace, applied cluster-wide)
+
+#####
+# LAB-1: Provide ServiceAccount Permissions
+#####
+Create Namespaces ns1 and ns2
+Create ServiceAccount pipeline in both Namespaces.
+
+These SAs should be allowed to view almost everything in the whole cluster. 
+You can use the default ClusterRole view for this.
+
+These SAs should be allowed to create and delete Deployments in their Namespace.
+
+# create namespaces
+k create ns ns1
+k create ns ns2
+
+# create service accounts
+kubectl -n ns1 create sa pipeline
+kubectl -n ns2 create sa pipeline
+
+# use ClusterRole view
+kubectl create clusterrolebinding pipeline-view --clusterrole view \
+  --serviceaccount ns1:pipeline --serviceaccount ns2:pipeline
+
+# manage Deployments in both Namespaces
+# create cluster role
+kubectl create clusterrole pipeline-deployment-manager --verb create,delete --resource deployments
+NOTE: instead of one ClusterRole we could also create the same Role in both Namespaces
+
+# create role binding
+kubectl -n ns1 create rolebinding pipeline-deployment-manager --clusterrole pipeline-deployment-manager --serviceaccount ns1:pipeline
+kubectl -n ns2 create rolebinding pipeline-deployment-manager --clusterrole pipeline-deployment-manager --serviceaccount ns2:pipeline
+
+##
+# verify
+##
+k get ns ns1
+k get ns ns2
+
+kubectl -n ns1 get sa pipeline
+kubectl -n ns2 get sa pipeline
+
+# namespace ns1 deployment manager
+kubectl auth can-i delete deployments --as system:serviceaccount:ns1:pipeline -n ns1 # YES
+kubectl auth can-i create deployments --as system:serviceaccount:ns1:pipeline -n ns1 # YES
+
+# namespace ns2 deployment manager
+kubectl auth can-i delete deployments --as system:serviceaccount:ns2:pipeline -n ns2 # YES
+kubectl auth can-i create deployments --as system:serviceaccount:ns2:pipeline -n ns2 # YES
+
+# cluster wide view role
+kubectl auth can-i list deployments --as system:serviceaccount:ns1:pipeline -n ns1 # YES
+kubectl auth can-i list deployments --as system:serviceaccount:ns1:pipeline -A # YES
+kubectl auth can-i list pods --as system:serviceaccount:ns1:pipeline -A # YES
+kubectl auth can-i list pods --as system:serviceaccount:ns2:pipeline -A # YES
+kubectl auth can-i list secrets --as system:serviceaccount:ns2:pipeline -A # # NO (default view-role doesn't allow )
+
+
+#####
+# LAB-2: Provide User Permissions
+#####
+Create Namespace applications
+User smoke should be allowed to create and delete Pods, Deployments and StatefulSets in Namespace applications.
+User smoke should have view permissions (like the permissions of the default ClusterRole named view ) in all Namespaces but not in kube-system .
+User smoke should be allowed to retrieve available Secret names in Namespace applications. Just the Secret names, no data.
+Verify everything using kubectl auth can-i
+
+k create ns applications
+
+kubectl -n applications create role smoke --verb create,delete --resource pods,deployments,sts
+kubectl -n applications create rolebinding smoke --role smoke --user smoke
+
+kubectl -n applications create rolebinding smoke-view --clusterrole view --user smoke
+kubectl -n default create rolebinding smoke-view --clusterrole view --user smoke
+kubectl -n kube-node-lease create rolebinding smoke-view --clusterrole view --user smoke
+kubectl -n kube-public create rolebinding smoke-view --clusterrole view --user smoke
+
+4) just list Secret names, no content
+This is NOT POSSIBLE using plain K8s RBAC.
+
+# Verify
+# as a deployment manager
+kubectl auth can-i create deployments --as smoke -n applications # YES
+kubectl auth can-i delete deployments --as smoke -n applications # YES
+kubectl auth can-i delete pods --as smoke -n applications # YES
+kubectl auth can-i delete sts --as smoke -n applications # YES
+kubectl auth can-i list deployments --as smoke -n applications # YES
+
+# view in all namespaces but not kube-system
+kubectl auth can-i list pods --as smoke -n default # YES
+kubectl auth can-i list pods --as smoke -n applications # YES
+kubectl auth can-i list pods --as smoke -n kube-public # YES
+kubectl auth can-i list pods --as smoke -n kube-node-lease # YES
