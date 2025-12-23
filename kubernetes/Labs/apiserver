@@ -1,0 +1,76 @@
+##############
+# apiserver
+##############
+#####
+# LAB-1: Enable NamespaceAutoProvision admission control
+#####
+# ALWAYS make a backup
+cp /etc/kubernetes/manifests/kube-apiserver.yaml ~/kube-apiserver.yaml
+
+controlplane:~$ cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep enable-admission-plugins 
+    - --enable-admission-plugins=NodeRestriction,NamespaceAutoProvision
+
+# Verify
+#!/bin/bash
+if [[ $(cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep "enable-admission-plugins" | grep -oi namespaceautoprovision) = 'NamespaceAutoProvision' ]]
+then
+  exit 0
+else
+  exit 1
+fi
+
+#####
+# LAB-2: Disable NamespaceLifecycle admission control
+#####
+kubectl delete ns default
+Error from server (Forbidden): namespaces "default" is forbidden: this namespace may not be deleted
+
+To delete default namespace, Disable the Admission Controller Plugin NamespaceLifecycle . 
+It's not recommended to do this in production. It is to understand this plugin use.
+
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep disable-admission-plugins 
+    - --disable-admission-plugins=NamespaceLifecycle
+
+#!/bin/bash
+
+if [[ $(cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep "disable-admission-plugins" | grep -io NamespaceLifecycle) = 'NamespaceLifecycle' ]]
+then
+  exit 0
+else
+  exit 1
+fi
+
+
+#####
+# LAB-3: List all Admission Controller Plugins
+#####
+Write all Admission Controller Plugins, which are enabled in the kube-apiserver manifest, 
+into /opt/admission-plugins
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -i enable-admission 
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep -i enable-admission | cut -d'=' -f2 | sed 's/,/\n/g' > /opt/admission-plugins
+cat /opt/admission-plugins
+
+OR
+cat > /opt/admission-plugins <<EOF
+NodeRestriction
+LimitRanger
+Priority
+EOF
+
+
+#####
+# LAB-4: Enable MutatingAdmissionWebhook admission control
+#####
+# ALWAYS make a backup
+cp /etc/kubernetes/manifests/kube-apiserver.yaml ~/kube-apiserver.yaml
+
+# edit kube-apiserver.yaml and include mutating webhook admission plugin
+vi /etc/kubernetes/manifests/kube-apiserver.yaml
+    - --enable-admission-plugins=NodeRestriction,LimitRanger,Priority,MutatingAdmissionWebhook
+
+crictl rm --force $(crictl ps -a -q --name "kube-apiserver")
+
+# verify
+cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep MutatingAdmissionWebhook
+ps aux | grep kube-apiserver | grep admission | grep MutatingAdmissionWebhook
+
