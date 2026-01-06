@@ -1,9 +1,8 @@
 ---
 persistence:
-  type: pvc
   enabled: true
   size: 2Gi 
-#  storageClassName: local-path
+  storageClassName: local-path
 
 # DO NOT DO THIS IN PRODUCTION USECASES
 adminUser: admin
