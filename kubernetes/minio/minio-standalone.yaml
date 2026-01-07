@@ -26,8 +26,7 @@ metadata:
   name: minio
 spec:
   serviceName: minio
-  replicas: 4
-  podManagementPolicy: "Parallel"
+  replicas: 1
   selector:
     matchLabels:
       app: minio
@@ -51,10 +50,7 @@ spec:
             value: 0.0.0.0:9001
         args:
         - server
-        - http://minio-0.minio:9000/data
-        - http://minio-1.minio:9000/data
-        - http://minio-2.minio:9000/data
-        - http://minio-3.minio:9000/data
+        - /data
   volumeClaimTemplates:
   - metadata:
       name: minio
