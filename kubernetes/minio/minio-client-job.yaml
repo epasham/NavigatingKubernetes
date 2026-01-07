@@ -34,7 +34,11 @@ spec:
         - -c
         - |
           /usr/bin/mc alias set s3 http://minio:9000 admin minio123
-          /usr/bin/mc mb s3/mimir-metrics || true
-          /usr/bin/mc mb s3/tempo-traces || true
+          /usr/bin/mc mb s3/loki-data || true
+          /usr/bin/mc mb s3/loki-ruler || true
+          /usr/bin/mc mb s3/mimir-data || true
+          /usr/bin/mc mb s3/mimir-ruler || true
+          /usr/bin/mc mb s3/mimir-alerts || true
+          /usr/bin/mc mb s3/tempo-data || true
           /usr/bin/mc ls s3
           echo "[INFO] MinIO buckets created successfully!"
