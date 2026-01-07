@@ -49,3 +49,14 @@ mimir-metrics  tempo-traces
 
 k exec -it minio-2 -- /bin/sh -c "ls /data"
 mimir-metrics  tempo-traces
+
+#######
+# single replica
+#######
+Note: To run single replica use the below configuration to start minio
+spec:
+  replicas: 1
+
+        args:
+        - server
+        - /data
