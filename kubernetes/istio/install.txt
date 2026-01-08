@@ -3,6 +3,11 @@
 ###########
 # Download Istio release version
 ISTIO_VERSION=1.27.5
+
+# To install latest version
+# ISTIO_VERSION="$(curl -sL https://github.com/istio/istio/releases | grep -o 'releases/[0-9]*.[0-9]*.[0-9]*/' | sort -V | \
+                  tail -1 | awk -F'/' '{ print $2}')"
+
 TARGET_ARCH=$(uname -m)
 curl -L https://istio.io/downloadIstio \
             | ISTIO_VERSION=$ISTIO_VERSION \
