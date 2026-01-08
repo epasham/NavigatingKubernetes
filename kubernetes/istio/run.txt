@@ -1,0 +1,41 @@
+############
+# Istio
+###########
+# Download Istio release version
+ISTIO_VERSION=1.20.3
+TARGET_ARCH=$(uname -m)
+curl -L https://istio.io/downloadIstio \
+            | ISTIO_VERSION=$ISTIO_VERSION \
+              TARGET_ARCH=$TARGET_ARCH sh -
+			  
+# Add istioctl to the system path
+# cd istio-1.20.3/
+# ~/istio-1.20.3$ pwd
+/root/istio-1.20.3
+export PATH=$PWD/bin:$PATH
+
+# list all available built-in Istio profiles
+# istioctl profile list
+Istio configuration profiles:
+    ambient
+    default
+    demo
+    empty
+    external
+    minimal
+    openshift
+    preview
+    remote
+	
+# To see full YAML configuration for the specified profile	
+# istioctl profile dump <profile-name>
+istioctl profile dump default > default-profile.yaml
+istioctl profile dump demo > demo-profile.yaml
+
+# Install Istio using the demo profile
+# istioctl install --set profile=demo -y
+✔ Istio core installed                                                                                                
+✔ Istiod installed                                                                                                    
+✔ Ingress gateways installed                                                                                          
+✔ Egress gateways installed                                                                                           
+✔ Installation complete                                                                                               Made this installation the default for injection and validation.
