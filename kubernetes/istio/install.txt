@@ -38,4 +38,26 @@ istioctl profile dump demo > demo-profile.yaml
 ✔ Istiod installed                                                                                                    
 ✔ Ingress gateways installed                                                                                          
 ✔ Egress gateways installed                                                                                           
-✔ Installation complete                                                                                               Made this installation the default for injection and validation.
+✔ Installation complete         
+
+# Configure Istio to perform automatic injection of the sidecar proxies to each pod deployed in the default namespace
+# k label namespace default istio-injection=enabled
+
+# k get ns default --show-labels
+NAME      STATUS   AGE   LABELS
+default   Active   20d   istio-injection=enabled,kubernetes.io/metadata.name=default
+
+# Validate that pods in default namespace are automatically injected with an Istio sidecar
+kubectl run test --image=nginx
+
+# k get po
+NAME   READY   STATUS    RESTARTS   AGE
+test   2/2     Running   0          13s
+
+# Verify that the pod has 2 containers:
+1 with nginx image named test
+1 with the istio proxy named istio-proxy (automatically injected by Istio)
+
+# k get pods -o jsonpath='{range .items[*].spec.containers[*]}{.name}{"\n"}{end}'
+test
+istio-proxy
