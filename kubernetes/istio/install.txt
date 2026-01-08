@@ -2,16 +2,16 @@
 # Istio
 ###########
 # Download Istio release version
-ISTIO_VERSION=1.20.3
+ISTIO_VERSION=1.27.5
 TARGET_ARCH=$(uname -m)
 curl -L https://istio.io/downloadIstio \
             | ISTIO_VERSION=$ISTIO_VERSION \
               TARGET_ARCH=$TARGET_ARCH sh -
 			  
 # Add istioctl to the system path
-# cd istio-1.20.3/
-# ~/istio-1.20.3$ pwd
-/root/istio-1.20.3
+# cd istio-1.27.5/
+# ~/istio-1.27.5$ pwd
+/root/istio-1.27.5
 export PATH=$PWD/bin:$PATH
 
 # list all available built-in Istio profiles
