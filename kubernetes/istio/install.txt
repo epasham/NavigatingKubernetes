@@ -66,3 +66,6 @@ test   2/2     Running   0          13s
 # k get pods -o jsonpath='{range .items[*].spec.containers[*]}{.name}{"\n"}{end}'
 test
 istio-proxy
+
+# Uninstall Istio from the Kubernetes cluster
+istioctl uninstall --purge -y
