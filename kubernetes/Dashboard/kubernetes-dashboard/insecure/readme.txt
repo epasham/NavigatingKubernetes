@@ -1,3 +1,6 @@
+# Allow insecure access by skipping the authentication process
+############
+
 # expose the dashboard UI
 POD_NAME=$(k -n kubernetes-dashboard get pods -l "k8s-app=kubernetes-dashboard" -o jsonpath="{.items[0].metadata.name}")
 k -n kubernetes-dashboard port-forward --address 0.0.0.0 $POD_NAME 9000:9090 &
