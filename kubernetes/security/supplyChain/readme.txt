@@ -4,11 +4,11 @@ scan the image that is used by the deployment and verify if the container contai
 Review the SBOM and identify any known vulnerable packages (e.g., outdated OpenSSL, curl, etc).
 
 # example
-trivy image alpine:3.22.2 ( vulnerabilities are found )
-trivy image alpine:3.22.2 --scanners vuln --format cyclonedx --output /tmp/alpine-3222.json
+trivy image python:3.14.1-alpine3.22 ( vulnerabilities are found )
+trivy image python:3.14.1-alpine3.22 --scanners vuln --format cyclonedx --output /tmp/alpine-3222.json
 
-trivy image alpine:3.23.2 ( no vulnerabilities )
-trivy image alpine:3.23.2 --scanners vuln --format cyclonedx --output /tmp/alpine-3232.json
+trivy image python:3.14.1-alpine3.23 ( no vulnerabilities )
+trivy image python:3.14.1-alpine3.23 --scanners vuln --format cyclonedx --output /tmp/alpine-3232.json
 
 # cat alpine-3232.json | grep -A 3 vulnerabilities
   "vulnerabilities": []
