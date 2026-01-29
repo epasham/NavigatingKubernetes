@@ -15,3 +15,38 @@ staticPodPath: /etc/kubernetes/manifests
 
 Output indicates that pod manifests are located in /etc/kubernetes/manifests
 YAML manifests placed in this directory are created directly by the kubelet.
+
+# Create sample statidpod on one of the node
+cat <<EOF > /etc/kubernetes/manifests/mystaticpod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: web
+  name: mystaticpod
+spec:
+  containers:
+  - image: nginx:alpine
+    name: web
+EOF
+
+# verif that pod is created successfully
+controlplane:~$ k get po
+NAME                       READY   STATUS    RESTARTS   AGE
+mystaticpod-controlplane   1/1     Running   0          105s
+
+Observe that the node name, in this case controlplane, is added as suffix to the pod name.
+
+#############################
+# How do we idenify a staticpod from a pod deployment
+#############################
+Annotations that indicate a static (mirror) Pod
+kubernetes.io/config.source: file
+kubernetes.io/config.mirror: <hash> (presence of this means it’s a mirror Pod)
+
+kubectl get pod <pod> -n <ns> -o jsonpath='{.metadata.annotations}'
+
+kubectl get pod mystaticpod-controlplane -n default -o jsonpath='{.metadata.annotations}'
+{"cni.projectcalico.org/containerID":"48666a5ffc9de36d1583c198077392963ec2a2f5a5b4308ab764cf7e2555b925","cni.projectcalico.org/podIP":"192.168.0.4/32","cni.projectcalico.org/podIPs":"192.168.0.4/32","kubernetes.io/config.hash":"b8c4387b0159b5eaf01c8590a05605b3","kubernetes.io/config.mirror":"b8c4387b0159b5eaf01c8590a05605b3","kubernetes.io/config.seen":"2026-01-29T06:35:09.718603095Z","kubernetes.io/config.source":"file"} 
+
+kubernetes.io/config.source: file and kubernetes.io/config.mirror annotations in the pod annotation indicates that this pod is a static pod.
