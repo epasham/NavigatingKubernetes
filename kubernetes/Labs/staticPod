@@ -1,0 +1,17 @@
+# What is a static Pod
+In Kubernetes, a static Pod is created directly by the kubelet from a manifest file on a node 
+and not by the API server or a controller (like a Deployment). 
+
+# Identify pod manifest path on the node
+ps -ef | grep kubelet
+root        1210       1  0 05:49 ?        00:00:09 /usr/bin/kubelet --bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf --config=/var/lib/kubelet/config.yaml --pod-infra-container-image=registry.k8s.io/pause:3.10.1 --container-runtime-endpoint unix:///run/containerd/containerd.sock --cgroup-driver=systemd --eviction-hard imagefs.available<5%,memory.available<100Mi,nodefs.available<5% --fail-swap-on=false
+
+# copy the file path from config param
+--config=/var/lib/kubelet/config.yaml 
+
+# look for staticpod file path from config file
+grep -i staticPodPath /var/lib/kubelet/config.yaml
+staticPodPath: /etc/kubernetes/manifests
+
+Output indicates that pod manifests are located in /etc/kubernetes/manifests
+YAML manifests placed in this directory are created directly by the kubelet.
