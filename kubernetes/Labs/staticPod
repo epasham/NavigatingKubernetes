@@ -50,3 +50,28 @@ kubectl get pod mystaticpod-controlplane -n default -o jsonpath='{.metadata.anno
 {"cni.projectcalico.org/containerID":"48666a5ffc9de36d1583c198077392963ec2a2f5a5b4308ab764cf7e2555b925","cni.projectcalico.org/podIP":"192.168.0.4/32","cni.projectcalico.org/podIPs":"192.168.0.4/32","kubernetes.io/config.hash":"b8c4387b0159b5eaf01c8590a05605b3","kubernetes.io/config.mirror":"b8c4387b0159b5eaf01c8590a05605b3","kubernetes.io/config.seen":"2026-01-29T06:35:09.718603095Z","kubernetes.io/config.source":"file"} 
 
 kubernetes.io/config.source: file and kubernetes.io/config.mirror annotations in the pod annotation indicates that this pod is a static pod.
+
+####################
+# Demystifying Static Pods: How kubelet Exposes Them to the API Server
+######################
+Even though static Pods are created locally by the kubelet, 
+the kubelet still communicates their existence to the API server by creating a mirror Pod
+
+Kubelet reads Pod YAML from the node’s filesystem. The kubelet watches a directory like:
+/etc/kubernetes/manifests
+
+Whenever it finds a .yaml/.json file there, it creates and runs the Pod locally.
+
+# Kubelet creates a mirror Pod object in the API server
+To make the Pod visible in Kubernetes, kubelet sends a Pod object to the API server using the Kubernetes API.
+
+# This is called a Mirror Pod
+Read‑only representation
+Created by kubelet, not by controller manager
+Exists purely for visibility/discovery
+
+Mirror Pod contains special annotations:
+YAMLkubernetes.io/config.source: file
+kubernetes.io/config.mirror: "<hash>"
+
+This is how Kubernetes identifies it as a static Pod.
