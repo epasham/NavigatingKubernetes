@@ -75,3 +75,13 @@ YAMLkubernetes.io/config.source: file
 kubernetes.io/config.mirror: "<hash>"
 
 This is how Kubernetes identifies it as a static Pod.
+
+When you run kubectl get pods, kubectl queries the API server
+kubectl never talks directly to the kubelet. It only asks the API server, and the API server returns:
+
+a) Regular Pods
+b) Mirror Pods representing static Pods
+
+Thus, you see a Pod even though:
+It wasn’t created via kubectl apply
+No Deployment, ReplicaSet, or controller exists
