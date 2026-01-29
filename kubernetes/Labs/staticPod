@@ -38,7 +38,7 @@ mystaticpod-controlplane   1/1     Running   0          105s
 Observe that the node name, in this case controlplane, is added as suffix to the pod name.
 
 #############################
-# How do we idenify a staticpod from a pod deployment
+# How do we identify a staticpod from a pod deployment
 #############################
 Annotations that indicate a static (mirror) Pod
 kubernetes.io/config.source: file
