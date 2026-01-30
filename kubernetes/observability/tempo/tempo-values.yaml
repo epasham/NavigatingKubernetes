@@ -5,7 +5,7 @@ storage:
     s3:
       access_key: "admin"
       secret_key: "minio123"
-      bucket: "tempo-data"
+      bucket: "tempo-traces"
       endpoint: "minio:9000"
       insecure: true
 
@@ -18,7 +18,7 @@ minio:
   rootPassword: minio123
   buckets:
     # Default Tempo storage bucket
-    - name: tempo-data
+    - name: tempo-traces
       policy: none
       purge: false
 
