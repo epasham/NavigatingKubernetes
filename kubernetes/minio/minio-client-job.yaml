@@ -39,6 +39,6 @@ spec:
           /usr/bin/mc mb s3/mimir-data || true
           /usr/bin/mc mb s3/mimir-ruler || true
           /usr/bin/mc mb s3/mimir-alerts || true
-          /usr/bin/mc mb s3/tempo-data || true
+          /usr/bin/mc mb s3/tempo-traces || true
           /usr/bin/mc ls s3
           echo "[INFO] MinIO buckets created successfully!"
