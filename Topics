@@ -1,4 +1,9 @@
 1. How to Patch Vulnerable Workload
    kubernetes/security/supplyChain/patch-vulnerable-workload/readme.txt
 
-2. 
+2. Metrics Server ( ppt )
+
+3. Static Pod/Mirror Pod
+   kubernetes/Labs
+
+4. 
